@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Student Login — Secure Access</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root {
+      --bg-color: #0c1218;
+      --panel-color: #141b24;
+      --neon-blue: #00bfff;
+      --neon-green: #00ff9c;
+      --muted: #718096;
+      --text-color: #d0f0f7;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse at 10% 10%, rgba(0,191,255,0.05), transparent 12%),
+        linear-gradient(180deg, #071418 0%, var(--bg-color) 40%, #05101a 100%);
+      font-family: 'Roboto Mono', monospace, monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--text-color);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .login-box {
+      background: var(--panel-color);
+      border-radius: 15px;
+      padding: 30px 28px;
+      width: 360px;
+      box-shadow: 0 0 24px rgba(0, 191, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(0, 191, 255, 0.15);
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      margin-bottom: 28px;
+      color: var(--neon-green);
+      text-shadow:
+        0 0 6px var(--neon-green),
+        0 0 20px var(--neon-green);
+      animation: flicker 3s linear infinite alternate;
+      user-select: none;
+    }
+
+    @keyframes flicker {
+      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+        opacity: 1;
+        text-shadow:
+          0 0 6px var(--neon-green),
+          0 0 20px var(--neon-green);
+      }
+      20%, 22%, 24%, 55% {
+        opacity: 0.5;
+        text-shadow: none;
+      }
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      background: transparent;
+      border: 1.8px solid rgba(0, 191, 255, 0.3);
+      border-radius: 8px;
+      padding: 14px 48px 14px 14px;
+      font-size: 1rem;
+      color: var(--text-color);
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+      border-color: var(--neon-blue);
+      box-shadow: 0 0 12px var(--neon-blue);
+    }
+    input::placeholder {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .field {
+      position: relative;
+      width: 100%;
+    }
+    .toggle-pwd-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: none;
+      background: none;
+      color: var(--neon-blue);
+      cursor: pointer;
+      font-size: 1.1rem;
+      user-select: none;
+      transition: color 0.3s ease;
+    }
+    .toggle-pwd-btn:hover {
+      color: var(--neon-green);
+    }
+
+    .strength-bar {
+      height: 8px;
+      border-radius: 6px;
+      background: rgba(0, 191, 255, 0.1);
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .strength-bar > div {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ff4d4d, var(--neon-blue), var(--neon-green));
+      transition: width 0.3s ease;
+      border-radius: 6px;
+    }
+    h3{
+        font-size: 1.8rem;
+      margin-bottom: 28px;
+      color: var(--neon-green);
+      text-shadow:
+        0 0 6px var(--neon-green),
+        0 0 20px var(--neon-green);
+      animation: flicker 3s linear infinite alternate;
+      user-select: none;
+    }
+    .strength-text {
+      margin-top: 6px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-style: italic;
+      user-select: none;
+      min-height: 18px;
+    }
+
+    button[type="submit"] {
+      background: var(--neon-blue);
+      border: none;
+      color: #001b29;
+      font-weight: 700;
+      padding: 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      letter-spacing: 1.1px;
+      box-shadow: 0 0 18px var(--neon-blue);
+      transition: background-color 0.25s ease;
+    }
+    button[type="submit"]:hover {
+      background: var(--neon-green);
+      box-shadow: 0 0 30px var(--neon-green);
+      color: #011f0a;
+    }
+
+  </style>
+</head>
+<body>
+  <main class="login-box" role="main" aria-labelledby="login-title">
+    <h2 id="login-title">👨‍🎓 Student Secure </h2>
+    <center><h3 id="login-title-2"> login </h3></center>
+
+    <form id="studentForm" autocomplete="on" novalidate>
+      <input type="text" id="name" name="name" placeholder="Full Name" required aria-required="true" />
+      <input type="email" id="email" name="email" placeholder="Email" required aria-required="true" />
+
+      <div class="field">
+        <input type="password" id="password" name="password" placeholder="Password" required aria-required="true" minlength="6" />
+        <button type="button" class="toggle-pwd-btn" aria-label="Show password" aria-pressed="false" tabindex="0">👁️</button>
+      </div>
+
+      <div class="strength-bar" aria-hidden="true">
+        <div id="strengthIndicator"></div>
+      </div>
+      <div class="strength-text" id="strengthText">Strength: —</div>
+
+      <button type="submit">ENTER PORTAL →</button>
+    </form>
+  </main>
+
+  <script>
+    const pwdInput = document.getElementById('password');
+    const toggleBtn = document.querySelector('.toggle-pwd-btn');
+    toggleBtn.addEventListener('click', () => {
+      const isPassword = pwdInput.type === 'password';
+      pwdInput.type = isPassword ? 'text' : 'password';
+      toggleBtn.textContent = isPassword ? '🙈' : '👁️';
+      toggleBtn.setAttribute('aria-pressed', isPassword);
+    });
+
+    const strengthIndicator = document.getElementById('strengthIndicator');
+    const strengthText = document.getElementById('strengthText');
+    pwdInput.addEventListener('input', () => {
+      const val = pwdInput.value;
+      let score = 0;
+      if (val.length >= 6) score++;
+      if (val.length >= 10) score++;
+      if (/[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+
+      const percent = (score / 5) * 100;
+      strengthIndicator.style.width = percent + '%';
+
+      let label = 'Very Weak';
+      if (score <= 1) label = 'Very Weak';
+      else if (score === 2) label = 'Weak';
+      else if (score === 3) label = 'Moderate';
+      else if (score === 4) label = 'Strong';
+      else if (score === 5) label = 'Very Strong';
+      strengthText.textContent = 'Strength: ' + label;
+    });
+
+    document.getElementById('studentForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+
+      if (!name) {
+        alert('Please enter your full name.');
+        return;
+      }
+
+      localStorage.setItem('studentName', name);
+
+      const btn = e.target.querySelector('button[type="submit"]');
+      btn.textContent = 'Verifying identity...';
+      btn.disabled = true;
+
+      setTimeout(() => {
+        window.location.href = 'skills-interests.html';
+      }, 700);
+    });
+  </script>
+  <script src="sarver.js"> login </script>
+</body>
+</html>

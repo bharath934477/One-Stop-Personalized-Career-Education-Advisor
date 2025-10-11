@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Graduate Login — Secure Portal</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{
+      --bg:#071018;
+      --panel:#0b1220;
+      --neon-green:#00ff9c;
+      --neon-blue:#00bfff;
+      --muted:#7b8aa3;
+      --glass: rgba(255,255,255,0.02);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:"Roboto Mono","Courier New",monospace;
+      background:
+        radial-gradient(ellipse at 10% 10%, rgba(0,191,255,0.03), transparent 8%),
+        linear-gradient(180deg,#051020 0%, #071018 40%, #031018 100%);
+      color:#dffbf0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .backdrop{
+      position:fixed;inset:0;z-index:0;pointer-events:none;
+      background-image:
+        linear-gradient(0deg, rgba(255,255,255,0.02) 1px, transparent 1px),
+        repeating-linear-gradient(90deg, rgba(0,255,156,0.01), rgba(0,255,156,0.01) 2px, transparent 2px, transparent 12px);
+      background-size:100% 28px,40px 100%;
+      opacity:.18;
+      mix-blend-mode:screen;
+    }
+
+    .login-box{
+      position:relative;
+      width:380px;
+      max-width:92%;
+      border-radius:12px;
+      padding:22px;
+      background:linear-gradient(180deg,rgba(255,255,255,0.015),rgba(255,255,255,0.01));
+      border:1px solid rgba(0,191,255,0.06);
+      box-shadow:0 18px 60px rgba(0,0,0,0.7),0 6px 20px rgba(0,191,255,0.02);
+      z-index:1;
+      overflow:hidden;
+      backdrop-filter:blur(6px);
+    }
+
+    .header{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+    .badge{
+      width:54px;height:54px;border-radius:8px;
+      background:linear-gradient(135deg,var(--neon-green),var(--neon-blue));
+      display:flex;align-items:center;justify-content:center;color:#012;
+      font-weight:800;font-size:18px;
+      box-shadow:0 6px 20px rgba(0,191,255,0.08);
+    }
+    .title{font-size:1.05rem;color:var(--neon-green);letter-spacing:.6px;}
+    .subtitle{color:var(--muted);font-size:.78rem;margin-top:4px;letter-spacing:.4px;}
+
+    form{display:flex;flex-direction:column;gap:12px;margin-top:12px;}
+    label{font-size:.72rem;color:var(--muted);display:block;margin-bottom:6px;letter-spacing:.35px;}
+    .field{position:relative;}
+    input[type="text"],input[type="email"],input[type="password"]{
+      width:100%;
+      padding:12px 44px 12px 12px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,0.04);
+      background:rgba(0,0,0,0.25);
+      color:#e8fff7;
+      font-size:.95rem;
+      outline:none;
+      transition:box-shadow .12s ease,border-color .12s ease,transform .12s ease;
+    }
+    input:focus{
+      box-shadow:0 8px 30px rgba(0,191,255,0.06);
+      border-color:rgba(0,191,255,0.22);
+      transform:translateY(-2px);
+    }
+
+    .field .right{
+      position:absolute;right:8px;top:50%;transform:translateY(-50%);
+      display:flex;gap:8px;align-items:center;
+    }
+    .icon-btn{
+      background:transparent;border:none;color:var(--neon-blue);
+      cursor:pointer;padding:6px;border-radius:6px;font-size:.9rem;
+    }
+    .icon-btn:hover{color:var(--neon-green);}
+
+    .strength{height:8px;width:100%;background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent);border-radius:6px;overflow:hidden;}
+    .strength>i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#ff4d4d,var(--neon-blue),var(--neon-green));transition:width .28s ease;}
+    .strength-label{font-size:.72rem;color:var(--muted);margin-top:6px;}
+
+    .btn{
+      margin-top:6px;
+      background:linear-gradient(90deg,rgba(0,255,156,0.06),rgba(0,191,255,0.06));
+      color:var(--neon-green);
+      border:1px solid rgba(0,255,156,0.12);
+      padding:12px;
+      border-radius:9px;
+      font-weight:700;
+      cursor:pointer;
+      letter-spacing:.6px;
+      transition:transform .12s ease,box-shadow .12s ease;
+    }
+    .btn:hover{transform:translateY(-4px);box-shadow:0 14px 40px rgba(0,191,255,0.08);}
+    .btn:disabled{opacity:.6;cursor:not-allowed;}
+
+    .note{margin-top:10px;font-size:.75rem;color:var(--muted);display:flex;justify-content:space-between;align-items:center;gap:6px;}
+    .status-dot{display:inline-block;width:8px;height:8px;border-radius:99px;background:linear-gradient(90deg,var(--neon-green),var(--neon-blue));box-shadow:0 6px 16px rgba(0,191,255,0.06);}
+
+    @media(max-width:420px){.badge{width:46px;height:46px}.login-box{padding:16px}}
+
+    .scan{pointer-events:none;position:absolute;inset:0;background-image:linear-gradient(rgba(0,0,0,0.04) 1px,transparent 1px);background-size:100% 4px;mix-blend-mode:multiply;opacity:.25;}
+  </style>
+</head>
+<body>
+  <div class="backdrop" aria-hidden="true"></div>
+
+  <main class="login-box" role="main">
+    <div class="header">
+      <div class="badge" aria-hidden="true">GD</div>
+      <div>
+        <div id="loginTitle" class="title">Graduate Secure Login</div>
+        <div class="subtitle">Authenticate • Protect • Proceed</div>
+      </div>
+    </div>
+
+    <form id="graduateForm" autocomplete="on" novalidate>
+      <div>
+        <label for="name">Full Name</label>
+        <div class="field">
+          <input id="name" name="name" type="text" placeholder="Jane Doe" required />
+          <div class="right">
+            <button type="button" class="icon-btn" title="Clear name" onclick="document.getElementById('name').value=''">✖</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label for="email">Email</label>
+        <div class="field">
+          <input id="email" name="email" type="email" placeholder="you@domain.com" required />
+          <div class="right">
+            <button type="button" class="icon-btn" title="Paste email">⎘</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label for="password">Password</label>
+        <div class="field">
+          <input id="password" name="password" type="password" placeholder="••••••••" required minlength="6" />
+          <div class="right">
+            <button type="button" id="togglePwd" class="icon-btn" aria-label="Show password">👁</button>
+          </div>
+        </div>
+
+        <div class="strength"><i id="strengthBar"></i></div>
+        <div class="strength-label">Strength: <span id="strengthText">—</span></div>
+      </div>
+
+      <div>
+        <label for="course">Completed Course</label>
+        <div class="field">
+          <input id="course" name="course" type="text" placeholder="e.g., B.Sc IT" required />
+          <div class="right">
+            <button type="button" class="icon-btn" title="Suggest course" onclick="document.getElementById('course').value='B.Sc (IT)'">★</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn" type="submit">ENTER PORTAL →</button>
+
+      <div class="note">
+        <div><span class="status-dot"></span> Secure Session</div>
+        <div>Demo mode</div>
+      </div>
+
+      <div class="scan" aria-hidden="true"></div>
+    </form>
+  </main>
+
+  <noscript><p style="color:red;text-align:center">⚠ JavaScript required to continue.</p></noscript>
+
+  <script>
+    const pwd = document.getElementById('password');
+    const toggle = document.getElementById('togglePwd');
+    const emailBtn = document.querySelector('[title="Paste email"]');
+    const strengthBar = document.getElementById('strengthBar');
+    const strengthText = document.getElementById('strengthText');
+    const form = document.getElementById('graduateForm');
+    const btn = form.querySelector('.btn');
+
+    // Password toggle
+    toggle.addEventListener('click', () => {
+      const type = pwd.type === 'password' ? 'text' : 'password';
+      pwd.type = type;
+      toggle.textContent = type === 'password' ? '👁' : '🙈';
+    });
+
+    // Safe clipboard paste
+    emailBtn.addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) document.getElementById('email').value = text;
+      } catch { alert('Clipboard read not allowed by browser.'); }
+    });
+
+    function evaluateStrength(value) {
+      let score = 0;
+      if (!value) return 0;
+      if (value.length >= 6) score++;
+      if (value.length >= 10) score++;
+      if (/[A-Z]/.test(value)) score++;
+      if (/[0-9]/.test(value)) score++;
+      if (/[^A-Za-z0-9]/.test(value)) score++;
+      return score;
+    }
+
+    function updateStrengthUI() {
+      const val = pwd.value || '';
+      const score = evaluateStrength(val);
+      const pct = (score / 5) * 100;
+      strengthBar.style.width = pct + '%';
+      const labels = ['Very Weak','Weak','OK','Strong','Very Strong'];
+      strengthText.textContent = labels[score - 1] || 'Very Weak';
+    }
+    pwd.addEventListener('input', updateStrengthUI);
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      btn.disabled = true;
+      btn.textContent = 'Processing...';
+
+      const name = form.name.value.trim();
+      const email = form.email.value.trim();
+      const password = form.password.value.trim();
+      const course = form.course.value.trim();
+
+      if (!name || !email || !password || !course) {
+        alert('Please fill in all required fields.');
+        btn.disabled = false;
+        btn.textContent = 'ENTER PORTAL →';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/register', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({name,email,password,course,role:'graduate'})
+        });
+
+        if (!res.ok) throw new Error('Network error');
+        const data = await res.json();
+
+        if (data.success) {
+          sessionStorage.setItem('graduateName', name);
+          sessionStorage.setItem('graduateCourse', course);
+          btn.textContent = 'Registration successful! Redirecting...';
+          setTimeout(()=>window.location.href='grdcareer.html',1000);
+        } else {
+          alert('Registration failed. Please try again.');
+          btn.disabled = false;
+          btn.textContent = 'ENTER PORTAL →';
+        }
+      } catch(err) {
+        console.error(err);
+        alert('An error occurred. Please try again.');
+        btn.disabled = false;
+        btn.textContent = 'ENTER PORTAL →';
+      }
+    });
+  </script>
+</body>
+</html>
